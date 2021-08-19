@@ -70,10 +70,6 @@ export default {
 			participants: {},
 		})
 
-		const participantLen = function () {
-			return participants.length
-		}
-
 		const connect = function() {
 			state.ws = new WebSocket('wss://' + location.host + '/groupcall');
 			state.ws.onopen = function(event) {
@@ -256,11 +252,11 @@ export default {
 						sequence: props.conferenceId
           })
           .then(function () {
+						leaveRoom()
           })
           .catch(function (err) {
             alert(err.response.data.message)
           })
-					leaveRoom()
 				}
 			} else {
 				if(confirm('화상회의를 종료하시겠습니까?')) {
@@ -431,7 +427,7 @@ export default {
 				// container.parentNode.removeChild(container);
 			};
 		}
-		return {participantLen, micOnOff, videoOnOff, goMain, router, connect, state, register, sendMessage, onParticipantLeft, receiveVideo,onExistingParticipants, callResponse, Participant, leaveRoom}
+		return {micOnOff, videoOnOff, goMain, router, connect, state, register, sendMessage, onParticipantLeft, receiveVideo,onExistingParticipants, callResponse, Participant, leaveRoom}
 		},
 }
 </script>

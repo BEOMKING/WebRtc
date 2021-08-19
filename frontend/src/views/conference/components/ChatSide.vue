@@ -5,16 +5,15 @@
 
     <div id="socket">
       <div id="chatMain">
-      <div
-        v-for="(item, idx) in state.form.recvList"
-        :key="idx" 
-      >
-      <div class="sentence">
-        <div style="float:left;"> {{ item.userName }} : </div>
-        <div>{{ item.message }}</div>
-      </div>
-  
-      </div>
+        <div v-for="(item, idx) in state.form.recvList" :key="idx" >
+          <!-- <div class="sentence d-flex" :class="[ item.userName === user.nickname ? 'flex-row-reverse' : 'flex-row']"> -->
+          <div class="sentence" :class="{'text-end' : item.userName === user.nickname}">
+            <div v-if="item.userName !== user.nickname" class="name-box "> {{ item.userName }} </div>
+            <div class="bubble" :class="[item.userName === user.nickname ? 'right' : 'left' ]">
+              <span> {{ item.message }} </span>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 유저이름:
       <input
@@ -22,7 +21,7 @@
         type="text"
       > -->
       <div id="chatInput">
-      {{user.name}} : <input
+      {{user.nickname}} : <input
         v-model="state.form.message"
         type="text"
         placeholder="메시지를 입력하세요"
@@ -65,9 +64,6 @@
   #input {
     width: 80%;
   }
-  span{
-    width: 100%;
-  }
 
   .sentence {
     background-color: #F6F6F6;
@@ -83,6 +79,48 @@
   .chat-show::-webkit-scrollbar {
     width: 1px;
   }
+
+  .bubble {
+    position: relative;
+    display: inline-block;
+  }
+
+  .bubble span {
+    display: inline-block;
+    padding: 10px;
+    background: #F6921E;
+    border-radius: 20px;
+  }
+
+  .bubble:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  .bubble.right:after, .bubble.left:after {
+    border-width: 10px 15px;
+    top: 50%;
+    margin-top: -10px;
+  }
+
+  .bubble.left:after {
+    border-color: transparent #F6921E transparent transparent;
+    left: -25px;
+  }
+
+  .bubble.right:after {
+    border-color: transparent transparent transparent #F6921E;
+    right: -25px;
+  }
+
+  .name-box {
+    margin-right: 1rem;
+    display: inline-block;
+  }
+
 </style>
 
 <script>
@@ -107,7 +145,7 @@ export default {
       conferenceId: '',
       form: {
         // token: localStorage.getItem('jwt'),
-        userName: user.name,
+        userName: user.nickname,
         message: "",
         recvList: [],
         stompClient: "",
@@ -116,6 +154,7 @@ export default {
 
     onMounted(() => {
       connect()
+      
     })
 
     const sendMessage = function (e) {
@@ -152,6 +191,9 @@ export default {
       const serverURL = "https://i5d202.p.ssafy.io:8443/ws-stomp" 
       let socket = new SockJS(serverURL);
       state.form.stompClient = Stomp.over(socket);
+      // 기본적으로 stomp에는 debug가 내장되어있다. 그래서 console창에 로그가 많이남음
+      // 이를 해결하기위해서 stompClient.debug를 빈함수로 만들어서 로그창이 안남도록 설정함
+      state.form.stompClient.debug = () => {};
       // console.log(`소켓 연결을 시도합니다. 서버 주소: ${serverURL}`)
       state.form.stompClient.connect(
         {},
