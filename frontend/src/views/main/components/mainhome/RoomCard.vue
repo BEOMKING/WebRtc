@@ -75,7 +75,8 @@ export default {
     const goSecretRoom = function () {
       router.replace({name: 'Conference', params: { 
         conferenceId : state.room.number,
-        owner: props.item.ownerNick
+        owner: props.item.ownerNick,
+        name: state.room.name
       }})
     }
 

@@ -27,6 +27,7 @@
         placeholder="메시지를 입력하세요"
         @keyup="sendMessage"
         id="input"
+        autocomplete="off"
       >
       </div>
       <!-- <div>
